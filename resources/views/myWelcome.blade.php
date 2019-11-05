@@ -85,8 +85,8 @@
                 </div>
 
                 <div class="links">
-                    <a href="/articles">Статьи</a>
-                    <a href="/about">О Блоге</a>
+                    <a href="{{ URL_PAGE_ARTICLES }}">Статьи</a>
+                    <a href="{{ URL_PAGE_ABOUT }}">О Блоге</a>
                 </div>
             </div>
         </div>

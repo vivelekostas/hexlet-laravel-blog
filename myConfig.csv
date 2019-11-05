@@ -1,0 +1,7 @@
+cd domains\hexlet-laravel-blog
+php artisan serve - запуск приложения.
+php artisan view:clear - почистить кеши (при обновлении и создании макетов, шаблонов)
+php artisan make:model Article --migration - пример создания новой модели
+php artisan migrate - "накатывает"/применяет на БД миграцию.
+php artisan migrate:rollback - попробует отменить последнюю миграцию
+php artisan tinker - запуск REPL интерфейса.
