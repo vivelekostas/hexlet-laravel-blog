@@ -85,8 +85,10 @@
                 </div>
 
                 <div class="links">
-                    <a href="{{ URL_PAGE_ARTICLES }}">Статьи</a>
-                    <a href="{{ URL_PAGE_ABOUT }}">О Блоге</a>
+                    <a href="{{ route('articles.index') }}">Статьи</a>
+                    <a href="{{ route('about') }}">О Блоге</a>
+                    {{-- <a href="{{ URL_PAGE_ARTICLES }}">Статьи</a> --}}
+                    {{-- <a href="{{ URL_PAGE_ABOUT }}">О Блоге</a>--}}
                 </div>
             </div>
         </div>
