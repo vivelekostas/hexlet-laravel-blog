@@ -48,9 +48,31 @@ Route::get(URL_PAGE_MAIN, function () {
 Route::get('/about', 'PageController@about')
     ->name('about');
 
-// Название сущности в URL во множественном числе, контроллер в единственном
+// Для списка статьей, поискового запроса, редиректа после создания и обновления.
+// Название сущности в URL во множественном числе, контроллер в единственном.
 Route::get('/articles', 'ArticleController@index')
-    ->name('articles.index'); // имя маршрута, нужно для того чтобы не создавать ссылки руками
+    ->name('articles.index'); // Имя маршрута, нужно для того чтобы не создавать ссылки руками.
 
+// Для формы создания статьи.
+Route::get('/articles/create', 'ArticleController@create')
+    ->name('articles.create');
+
+// POST запрос для формы создания статьи.
+Route::post('/articles', 'ArticleController@store')
+    ->name('articles.store');
+
+// Для конкретной статьи.
 Route::get('/articles/{id}', 'ArticleController@show')
-    ->name('articles.show');
+    ->name('article');
+
+// Для вывода формы обновления статьи.
+Route::get('/articles/{id}/edit', 'ArticleController@edit')
+    ->name('articles.edit');
+
+// Для обработки отправленной формы обновления статьи.
+Route::patch('/articles/{id}', 'ArticleController@update')
+    ->name('articles.update');
+
+// Для удаления статьи.
+Route::delete('/articles/{id}', 'ArticleController@destroy')
+    ->name('articles.destroy');

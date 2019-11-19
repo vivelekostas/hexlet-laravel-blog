@@ -1,8 +1,32 @@
 cd domains\hexlet-laravel-blog
-php artisan serve - запуск приложения.
+php artisan serve - это запуск сайта/приложения в режиме разработки.
+php artisan - список всех команд.
 php artisan view:clear - почистить кеши (при обновлении и создании макетов, шаблонов).
 php artisan make:model Article --migration - пример создания новой модели.
 php artisan migrate - "накатывает"/применяет на БД миграцию.
 php artisan migrate:rollback - попробует отменить последнюю миграцию.
-php artisan tinker - запуск REPL интерфейса.
+php artisan tinker - запуск Tinker (REPL интерфейса), для экспериментов с языком и фреймворком.
 php artisan make:controller PageController - пример создания контроллера.
+php artisan make:request ArticleValidateRequest - пример создания Form Request. Т.е. например такой класс, который
+берёт на себя функцию валидации, осовобождая от нее методы контроллера.
+
+=================================================================================================
+npm install jquery-ujs - для установки jquery-ujs (при условии, что nod.js уже установлен)
+require('jquery-ujs'); - Затем добавьте эту строчку в файл resources/js/app.js, после строчки require('./bootstrap');
+npm run watch - И запустите сборку фронтенда.
+=================================================================================================
+$ composer require "laravelcollective/html" - для установки компонента по работе с формами.
+1) добавьте новый провайдер в список провайдеров в config/app.php
+ 'providers' => [
+    // ...
+    Collective\Html\HtmlServiceProvider::class,
+    // ...
+  ],
+2) добавьте два алиаса в список алиасов:
+'aliases' => [
+  // ...
+    'Form' => Collective\Html\FormFacade::class,
+    'Html' => Collective\Html\HtmlFacade::class,
+  // ...
+],
+=================================================================================================

@@ -11,6 +11,10 @@
     </head>
     <body>
         <div class="container mt-4">
+            {{-- Вывод флеш сообщения --}}
+            @if (Session::has('flash_message'))
+                <div class="alert alert-success">{{ Session::get('flash_message') }}</div>
+            @endif
             <h1>@yield('header')</h1>
             <hr>
             <div>
