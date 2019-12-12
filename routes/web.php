@@ -3,12 +3,11 @@
 // Основные страницы.
 const URL_PAGE_MAIN = '/';
 const URL_PAGE_ABOUT = '/about';
-const URL_PAGE_ARTICLES = '/articles';
 
 // Шаблоны к ним.
 const TMPL_PAGE_MAIN = 'myWelcome';
 const TMPL_PAGE_ABOUT = 'about';
-const TMPL_PAGE_ARTICLES = 'articles';
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,49 +29,21 @@ const TMPL_PAGE_ARTICLES = 'articles';
 | При использовании контрорллера ф.Route::get принимает в себя вторым параметром строку controllerName@methodName,
 | которая, как бы, вызовет обработчик, который теперь является методом класса PageController.
 |
+| Route::resource('/articles', 'ArticleController'); - пример ресурсного роутинга. Он упрощает создание типичных
+| крудов, за счет полной унификации всех маршрутов и способов их обработки. Вместо описания 7 разных маршрутов в
+| web.php, ресурсный роутинг позволяет указать один метамаршрут.
+|
 */
 
 Route::get(URL_PAGE_MAIN, function () {
     return view(TMPL_PAGE_MAIN);
 });
 
-//Route::get(URL_PAGE_ABOUT, function () {
-//    return view(TMPL_PAGE_ABOUT);
-//});
-
-//Route::get(URL_PAGE_ARTICLES, function () {
-////    $articles = App\Article::all(); //Извлекает из базы данных все статьи.
-////    return view(TMPL_PAGE_ARTICLES, ['articles' => $articles]); //И выводит их в шаблон.
-////});
-
 Route::get('/about', 'PageController@about')
     ->name('about');
 
-// Для списка статьей, поискового запроса, редиректа после создания и обновления.
-// Название сущности в URL во множественном числе, контроллер в единственном.
-Route::get('/articles', 'ArticleController@index')
-    ->name('articles.index'); // Имя маршрута, нужно для того чтобы не создавать ссылки руками.
+Route::resource('/articles', 'ArticleController');
 
-// Для формы создания статьи.
-Route::get('/articles/create', 'ArticleController@create')
-    ->name('articles.create');
+Route::resource('/articles.comments', 'ArticleCommentController');
 
-// POST запрос для формы создания статьи.
-Route::post('/articles', 'ArticleController@store')
-    ->name('articles.store');
 
-// Для конкретной статьи.
-Route::get('/articles/{id}', 'ArticleController@show')
-    ->name('article');
-
-// Для вывода формы обновления статьи.
-Route::get('/articles/{id}/edit', 'ArticleController@edit')
-    ->name('articles.edit');
-
-// Для обработки отправленной формы обновления статьи.
-Route::patch('/articles/{id}', 'ArticleController@update')
-    ->name('articles.update');
-
-// Для удаления статьи.
-Route::delete('/articles/{id}', 'ArticleController@destroy')
-    ->name('articles.destroy');

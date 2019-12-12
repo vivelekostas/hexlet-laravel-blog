@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Article;
+use App\ArticleComment;
+use Illuminate\Http\Request;
 use App\Http\Requests\ArticleValidateRequest;
 
+/**
+ * Класс отвечающий за CRUD статьи. Это новый. Старый хоть и носил такое же название, но наполнялся обработчиками
+ * мною постепенно и собственноручно. Новый создался уже с каркасом из всех необходимых методов, осталась их напо-
+ * лнить содержанием. Ещё он часто в параметры методов принимает саму сущность из БД, а не id, как было раньше.
+ * Это позволяет сократить код не много.
+ * Class ArticleController
+ * @package App\Http\Controllers
+ */
 class ArticleController extends Controller
 {
-
     /**
+     * Display a listing of the resource.
      * Возвращает список всех статей с учётом пейджинга. Если же сюда приходит поисковая
      * форма, то из неё ($request) извлекаются данные, и статьи извлекаются уже с определённой
      * фильтрацией - согласно запросу.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
@@ -22,25 +31,27 @@ class ArticleController extends Controller
         // Like оказывает огромное влияние на производительность. Используйте их осторожно. Изучите индексы
         // и полнотекстовый поиск.
         // Если $q - true (т.е НЕ пустое), то присв-ется 1ое значение, а еси false (null/пустое) то 2ое.
-        // В 1ом значении про-ит фильтрация по слову, встречающемуся в названии статьи с учётом пагинации.
+        // Во 1ом значении про-ит фильтрация по слову, встречающемуся в названии статьи с учётом пагинации.
+        // Во 20м значении про-ит вывод всех статей по дате создания, начиная с новых.
         // q передаётся 2ым пар-ом, чтобы строка поиска не оставалась пустой после выполнения.
-        $articles = $q ? Article::where('name', 'like', "%{$q}%")->paginate(3) : Article::paginate(3);
+        $articles = $q ? Article::where('name', 'like', "%{$q}%")->paginate(3) : Article::orderBy('created_at', 'desc')->paginate(3);
         return view('article.index', compact('articles', 'q'));
     }
 
     /**
-     * Вывод формы.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        // Передаем в шаблон вновь созданный объект. Он нужен для вывода формы через Form::model
         $article = new Article();
 //        dd($article);
         return view('article.create', compact('article'));
     }
 
     /**
+     * Store a newly created resource in storage.
      * Обработчик формы создания статьи. Сначала проверяются данные формы с применением Form Request
      * (ArticleValidateRequest) и если форма не пройдет проверку, то этот метод даже не начнёт исполняться,
      * а если всё хорошо, то создаётся ноый об.класса статья, в него записываются данные из формы
@@ -48,7 +59,7 @@ class ArticleController extends Controller
      * валидациюна себя, позволяя удалить её из методов контроллера.
      * Здесь нам понадобится объект запроса, для извлечения данных.
      * @param ArticleValidateRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
     public function store(ArticleValidateRequest $request)
     {
@@ -69,42 +80,39 @@ class ArticleController extends Controller
     }
 
     /**
-     * @param $id  определенный в маршруте, приходит в обработчик как аргумент.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the specified resource.
+     * И передаёт пустой коммент для формы
+     * @param  \App\Article  $article
+     * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Article $article)
     {
-        // Специальная ф., которая в случае отсутсвия искомого элемента
-        // вернёт обработанное исключение, в отличие от ф.find.
-        $article = Article::findOrFail($id);
-        return view('article.show', compact('article'));
+        $newComment = new ArticleComment();
+        return view('article.show', compact('article', 'newComment'));
     }
 
     /**
-     * @param $id определенный в маршруте, приходит в обработчик как аргумент.
+     * Show the form for editing the specified resource.
      * Мы не создаем сущность с нуля, для передачи в форму, как при создании
      * новой статьи, а извлекаем ее из базы.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param  \App\Article  $article
+     * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Article $article)
     {
-        $article = Article::findOrFail($id);
         return view('article.edit', compact('article'));
     }
 
     /**
-     * @param Request $request - из него извлекаются данные формы.
-     * @param $id определенный в маршруте, приходит в обработчик как аргумент.
-     * Обработчик, который проверит данные формы и сохранит обновления, сделая редирект
-     * на маршрут списка статей, или выдаст ошибку. Сначала находиться конкретная запись в БД по id,
-     * затем происходит валидация данных из пришедшей формы с исключением найденной записи. А потом
-     * найденная запись просто перезавписывается.
-     * @return \Illuminate\Http\RedirectResponse
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Article $article
+     * @return \Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Article $article)
     {
-        $article = Article::findOrFail($id);
         $this->validate($request, [
             // тут пока без ArticleValidateRequest)
             // У обновления немного измененная валидация. В проверку уникальности добавляется
@@ -122,16 +130,17 @@ class ArticleController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
      * Не забывайте про авторизацию -Удаление должно быть
      * доступно только тем, кто может его выполнять.
-     * @param $id для поиска сущности
-     * @return \Illuminate\Http\RedirectResponse
+     * @param \App\Article $article
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(Article $article)
     {
         // DELETE идемпотентный метод, поэтому результат операции всегда один и тот же
-        $article = Article::find($id);
-//        dd($article->name);
+
         $name = $article->name;
         if ($article) {
             $article->delete();
@@ -140,5 +149,4 @@ class ArticleController extends Controller
         \Session::flash('flash_message', 'Милорд, статья: ' . $name . ' удалена успешно!');
         return redirect()->route('articles.index');
     }
-
 }

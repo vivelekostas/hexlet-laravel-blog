@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateArticlesTable extends Migration
+class CreateArticleCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateArticlesTable extends Migration
      */
     public function up()
     {
-        Schema::create('articles', function (Blueprint $table) {
+        Schema::create('article_comments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name'); // название статьи
-            $table->text('body'); // тело статьи
-//            $table->integer('likes_count')->default(0); // кол-во просмотров
+            $table->string('content');
+            $table->bigInteger('article_id')->unsigned();
+            $table->foreign('article_id')->references('id')->on('articles');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateArticlesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('articles');
+        Schema::dropIfExists('article_comments');
     }
 }
